@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# This script takes a prefix for a movie and finds IDs for movies with that prefix
+prefix="$1"
+
+first_letter="$(echo "$prefix" | cut -c 1 | tr 'a-z' 'A-Z')"
+
+movie_list_url="http://www.icefilms.info/movies/a-z/$first_letter"
+
+movie_list="$(curl -s "$movie_list_url")"
+
+echo "$movie_list" | ruby -rnokogiri  -e '
+Nokogiri::parse(STDIN.read).at("span.list").search("a").each do |item|
+	if item.content.downcase.start_with?(ARGV[0].downcase)
+		id = item["href"].sub(/[^0-9]*([0-9]+).*/,"\\1")
+		puts id + " " + item.content
+	end
+end
+' "$prefix"
