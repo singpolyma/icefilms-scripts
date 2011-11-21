@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# This script takes a prefix for a show and finds IDs for shows with that prefix
+prefix="$1"
+
+first_letter="$(echo "$prefix" | cut -c 1 | tr 'a-z' 'A-Z')"
+
+show_list_url="http://www.icefilms.info/tv/a-z/$first_letter"
+
+show_list="$(curl -s "$show_list_url")"
+
+echo "$show_list" | ruby -rnokogiri  -e '
+Nokogiri::parse(STDIN.read).at("span.list").search("a").each do |item|
+	if item.content.downcase.start_with?(ARGV[0].downcase)
+		id = item["href"].sub(/[^0-9]*([0-9]+\/[0-9]+).*/,"\\1")
+		puts id + " " + item.content
+	end
+end
+' "$prefix"
