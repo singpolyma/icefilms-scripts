@@ -3,7 +3,12 @@
 # This script takes a prefix for a movie and finds IDs for movies with that prefix
 prefix="$1"
 
-first_letter="$(echo "$prefix" | cut -c 1 | tr 'a-z' 'A-Z')"
+# Icefilms puts "The Blah" into "B", but the title is still "The Blah"
+if [ "$(echo "$prefix" | cut -c 1-4)" = "The " ]; then
+	first_letter="$(echo "$prefix" | cut -c 5 | tr 'a-z' 'A-Z')"
+else
+	first_letter="$(echo "$prefix" | cut -c 1 | tr 'a-z' 'A-Z')"
+fi
 
 movie_list_url="http://www.icefilms.info/movies/a-z/$first_letter"
 
