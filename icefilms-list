@@ -1,23 +1,21 @@
 #!/bin/sh
 
 # This script takes a prefix for a movie and finds IDs for movies with that prefix
-prefix="$1"
+prefix="$2"
 
 # Icefilms puts "The Blah" into "B", but the title is still "The Blah"
-if [ "$(echo "$prefix" | cut -c 1-4)" = "The " ]; then
+if echo "$prefix" | grep -qi "^The "; then
 	first_letter="$(echo "$prefix" | cut -c 5 | tr 'a-z' 'A-Z')"
 else
 	first_letter="$(echo "$prefix" | cut -c 1 | tr 'a-z' 'A-Z')"
 fi
 
-movie_list_url="http://www.icefilms.info/movies/a-z/$first_letter"
+list_url="http://www.icefilms.info/$1/a-z/$first_letter"
 
-movie_list="$(curl -s "$movie_list_url")"
-
-echo "$movie_list" | ruby -rnokogiri  -e '
+curl -s "$list_url" | ruby -rnokogiri -e '
 Nokogiri::parse(STDIN.read).at("span.list").search("a").each do |item|
 	if item.content.downcase.start_with?(ARGV[0].downcase)
-		id = item["href"].sub(/[^0-9]*([0-9]+).*/,"\\1")
+		id = item["href"][/[0-9]+(?:\/[0-9]+)?/]
 		puts id + " " + item.content
 	end
 end
