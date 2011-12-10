@@ -21,4 +21,4 @@ while [ $TIMEOUT -gt 0 ]; do
 done
 
 echo
-echo "$MEGAUPLOAD_PAGE" | ruby -rnokogiri -e 'puts Nokogiri::parse(STDIN.read).at("#downloadlink").at("a").attributes["href"]'
+echo "$MEGAUPLOAD_PAGE" | ruby -rnokogiri -e 'puts Nokogiri::parse(STDIN.read).at("#dlbutton")["href"]'
