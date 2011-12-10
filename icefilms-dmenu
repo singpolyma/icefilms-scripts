@@ -1,0 +1,35 @@
+#!/bin/sh
+# FIXME This does not handle multi-part sources well
+
+history="$HOME/.icefilms_history"
+touch "$history"
+
+menu="dmenu -i -l 10 -fn -*-helvetica-*-r-*-*-*-180-*-*-*-*-*-*"
+
+if [ -z "$1" ]; then
+	echo "You must specify tv or movies." 1>&2
+	exit 1
+fi
+
+prefix="`$menu -p "$1" < "$history"`"
+
+# If dmenu was cancelled, do not continue
+[ -z "$prefix" ] && exit
+
+new_hist="`(echo "$prefix"; cat "$history") | sort | uniq`"
+echo "$new_hist" > "$history"
+
+select="`icefilms-list "$1" "$prefix" | $menu | cut -d' ' -f1`"
+
+# If dmenu was cancelled, do not continue
+[ -z "$select" ] && exit
+
+# If tv, then get episode
+if [ "$1" = "tv" ]; then
+	select="`icefilms-episodes "$select" | $menu | cut -d' ' -f1`"
+fi
+
+# If dmenu was cancelled, do not continue
+[ -z "$select" ] && exit
+
+icefilms-download "`icefilms-sources "$select" | $menu`"
