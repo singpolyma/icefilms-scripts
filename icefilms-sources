@@ -8,8 +8,15 @@ fi
 curl -s http://www.icefilms.info/membersonly/components/com_iceplayer/video.php?vid=$ID | ruby -rnokogiri -e '
 Nokogiri::parse(STDIN.read).at("#srclist").search(".ripdiv").each do |el|
 	puts el.at("b").inner_html # section title
-	el.search("a").each do |a|
-		puts "#{ARGV[0]} #{a.attributes["onclick"].to_s.scan(/\d+/)[0]}"
+	el.search("p").each do |p|
+		links = p.search("a")
+		next if links.empty?
+
+		print ARGV[0]
+		links.each do |a|
+			print " #{a["onclick"][/\d+/]}"
+		end
+		puts
 	end
 end
 ' $ID
