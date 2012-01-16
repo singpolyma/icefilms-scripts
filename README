@@ -1,1 +1,8 @@
 These are some scripts to help in using <http://icefilms.info> without JavaScript.
+
+These scripts require ruby and nokogiri.
+
+You need cURL and it must be setup to store cookies, with a ~/.curlrc file similar to the following:
+
+cookie = "/home/user/.cookies.txt"
+cookie-jar = "/home/user/.cookies.txt"
