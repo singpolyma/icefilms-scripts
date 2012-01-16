@@ -14,6 +14,11 @@ MEGAUPLOAD="`curl -s http://www.icefilms.info/membersonly/components/com_iceplay
 MEGAUPLOAD_PAGE="`curl -s "$MEGAUPLOAD"`"
 
 TIMEOUT="`echo "$MEGAUPLOAD_PAGE" | grep 'count=\d*' | cut -d= -f2 | cut -d';' -f1`"
+
+if [ -z "$TIMEOUT" ]; then
+	TIMEOUT=0
+fi
+
 while [ $TIMEOUT -gt 0 ]; do
 	printf "\r%02d" $TIMEOUT
 	sleep 1
