@@ -1,0 +1,15 @@
+#!/bin/sh
+
+url="$1"
+if [ -z "$url" ] || [ "$url" = "-" ]; then
+	echo "Waiting for URL on STDIN..." 1>&2
+	url="`cat`"
+fi
+
+echo "$url" | sed -e 's/^.*\/\([0-9]\{1,\}\)\/\(.*\)$/\1 \2/' | (
+	read -r id filename
+	curl -s "https://rs772tl2.rapidshare.com/cgi-bin/rsapi.cgi?sub=download&fileid=$id&filename=$filename&try=1" | sed -e 's/DL:\([^,]*\),\([^,]*\),\([^,]*\).*/\1 \2 \3/' | (
+		read -r host dlauth timeout
+		echo "$timeout http://$host/cgi-bin/rsapi.cgi?sub=download&fileid=$id&filename=$filename&dlauth=$dlauth"
+	)
+)

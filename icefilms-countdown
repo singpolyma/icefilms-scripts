@@ -1,0 +1,21 @@
+#!/bin/sh
+
+timeout="$1"
+url="$2"
+if [ -z "$2" ]; then
+	read -r timeout url
+fi
+
+if [ -z "$timeout" ]; then
+       timeout=0
+fi
+
+while [ $timeout -gt 0 ]; do
+       printf "\r%03d" $timeout 1>&2
+       sleep 1
+       timeout="$(( $timeout - 1 ))"
+done
+
+echo 1>&2
+echo "Downloading $url" 1>&2
+curl -OJ "$url"

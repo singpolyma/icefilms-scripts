@@ -32,4 +32,4 @@ fi
 # If dmenu was cancelled, do not continue
 [ -z "$select" ] && exit
 
-icefilms-download "`icefilms-sources "$select" | $menu`"
+icefilms-download "`icefilms-sources "$select" | $menu`" | rapidshare-download | icefilms-countdown
